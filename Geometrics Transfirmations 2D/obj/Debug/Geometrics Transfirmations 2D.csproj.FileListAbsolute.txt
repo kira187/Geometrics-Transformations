@@ -1,0 +1,10 @@
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\bin\Debug\Geometrics Transfirmations 2D.exe.config
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\bin\Debug\Geometrics Transfirmations 2D.exe
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\bin\Debug\Geometrics Transfirmations 2D.pdb
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics Transfirmations 2D.csprojAssemblyReference.cache
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics_Transfirmations_2D.Form1.resources
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics_Transfirmations_2D.Properties.Resources.resources
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics Transfirmations 2D.csproj.GenerateResource.cache
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics Transfirmations 2D.csproj.CoreCompileInputs.cache
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics Transfirmations 2D.exe
+C:\Users\Misael Aguas Jimenez\source\repos\Geometrics Transfirmations 2D\Geometrics Transfirmations 2D\obj\Debug\Geometrics Transfirmations 2D.pdb
