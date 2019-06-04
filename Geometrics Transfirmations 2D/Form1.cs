@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Geometrics_Transfirmations_2D
 {
@@ -68,7 +69,7 @@ namespace Geometrics_Transfirmations_2D
             WorkSPace.Refresh();
             txB_TraslationX.Clear();
             txB_TraslationY.Clear();
-            txb_Escale.Clear();
+            NumUpDown_scale.Value = 0;
             pts.Clear();
 
             btn_refleX.Enabled = false;
@@ -138,26 +139,74 @@ namespace Geometrics_Transfirmations_2D
         {
             int grades = trackBar_Rotation.Value;
 
-            List<Point> centro, rotacion, origen;
-            centro = PtsDisplacementOrigin(pts);
-            RotationAnimated(centro, grades);
-            rotacion = Rotation(centro, grades);
-            origen = PtsDisplacementOriginalPosition(rotacion);
-            pts = origen;
+            List<Point> PtsOrigin,
+                        PtsRotated, 
+                        PtsOrinalPosition = new List<Point>();
+            
+            PtsOrigin = PtsDisplacementOrigin(pts);
+            RotationAnimated(PtsOrigin, grades);
+            PtsRotated = Rotation(PtsOrigin, grades);
+            PtsOrinalPosition = PtsDisplacementOriginalPosition(PtsRotated);
+            pts = PtsOrinalPosition;
+
             DrawnCenter(pts);
         }
 
         private void Btn_Scalar_Click(object sender, EventArgs e)
         {
-            int scale = Convert.ToInt32(txb_Escale.Text);
-            List<Point> Origin, escalar, origen;
-            Origin = PtsDisplacementOrigin(pts);
-            ScaleAnimated(Origin, scale);
-            escalar = ScaleFigure(Origin, scale);
+            Double scale = Convert.ToSingle(NumUpDown_scale.Text);
+            
+            List<Point> PtsOrigin,
+                        PtsScaled,
+                        PtsOrinalPosition = new List<Point>();
 
-            origen = PtsDisplacementOriginalPosition(escalar);
-            pts = origen;
+            PtsOrigin = PtsDisplacementOrigin(pts);
+            ScaleAnimated(PtsOrigin, scale);
+            PtsScaled = ScaleFigure(PtsOrigin, scale);
+
+            PtsOrinalPosition = PtsDisplacementOriginalPosition(PtsScaled);
+            pts = PtsOrinalPosition;
             DrawnCenter(pts);
+        }
+
+        private void btnLoadFile_Click_1(object sender, EventArgs e)
+        {
+            WorkSPace.Refresh();
+            if (File.Exists("FigurePoints.txt"))
+            {
+                pts.Clear();
+                using (StreamReader inputuFile = new StreamReader("FigurePoints.txt"))
+                {
+                    string linea = "";
+                    int x, y;
+                    while (!inputuFile.EndOfStream)
+                    {
+                        Point coordenada = new Point();
+                        string[] strCoordenada;
+
+                        linea = inputuFile.ReadLine();
+                        strCoordenada = linea.Split(',');
+
+
+                        x = int.Parse(strCoordenada[0]);
+                        y = int.Parse(strCoordenada[1]);
+                        coordenada.X = x;
+                        coordenada.Y = y;
+
+
+                        pts.Add(coordenada);
+
+                        DrawnFigure(pts, Pencil(Color.Black));
+                    }
+                    inputuFile.Close();
+                }
+            }
+            else
+            {
+                MessageBox.Show("No existe el archivo coordenadas.txt");
+            }
+            //dibujarCuadricula();
+
         }
 
         public void DrawnFigure(List<Point> pts, Pen pencil)
@@ -251,14 +300,14 @@ namespace Geometrics_Transfirmations_2D
             }
         }
 
-        void ScaleAnimated(List<Point> pts, int scale)
+        void ScaleAnimated(List<Point> pts, Double scale)
         {
             for (int i = 1; i <= scale; i++)
             {
                 WorkSPace.Refresh();
                 DrawnFigure(ScaleFigure(pts, (i)), Pencil(Color.Black));
                 System.Threading.Thread.Sleep(500);
-                Console.WriteLine("Escalado por:" + i);
+
             }
         }
 
@@ -367,6 +416,8 @@ namespace Geometrics_Transfirmations_2D
 
                 WorkSPace.Refresh();
                 DrawnFigure(Traslation(pts, -i, cy), Pencil(Color.Black));
+                
+
                 System.Threading.Thread.Sleep(10);
                 cx = -i;
             }
@@ -434,7 +485,7 @@ namespace Geometrics_Transfirmations_2D
             return ptsRotated;
         }
 
-        public List<Point> ScaleFigure(List<Point> puntos, int scale)
+        public List<Point> ScaleFigure(List<Point> puntos, double scale)
         {
             List<Point> Scaledpts = new List<Point>();
             Point ScaledPt = new Point(); ;
@@ -443,8 +494,8 @@ namespace Geometrics_Transfirmations_2D
             for (int i = 0; i < puntos.Count; i++)
             {
 
-                ScaledPt.X = puntos[i].X * scale;
-                ScaledPt.Y = puntos[i].Y * scale;
+                ScaledPt.X = (int)(puntos[i].X * scale);
+                ScaledPt.Y = (int)(puntos[i].Y * scale);
 
                 Scaledpts.Add(ScaledPt);
             }
@@ -453,26 +504,9 @@ namespace Geometrics_Transfirmations_2D
             return Scaledpts;
         }
 
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            Point point = new Point(275, 285);
-            Point point1 = new Point(200, 255);
-            Point point2 = new Point(275, 110);
-            Point point3 = new Point(325, 250);
-            Point point4 = new Point(275, 285);
-            Point point5 = new Point(275, 110);
+        
 
-            pts.Add(point);
-            pts.Add(point1);
-            pts.Add(point2);
-            pts.Add(point3);
-            pts.Add(point4);
-            pts.Add(point5);
-
-            //WorkSPace.CreateGraphics().DrawEllipse(Pencil(Color.Black), point.X, point.Y, 2, 2);
-
-        }
-       
+        
     }
 
 }
