@@ -12,13 +12,20 @@ namespace Geometrics_Transfirmations_2D
 {
     public partial class Form1 : Form
     {
+
         List<Point> pts = new List<Point>();
-        int grades = 0;
         Point CenterOrigin;
 
         public Form1()
         {
             InitializeComponent();
+
+            btn_refleX.Enabled = false;
+            btn_refleY.Enabled = false;
+            btn_Rotation.Enabled = false;
+            btn_Scalar.Enabled = false;
+            btn_Traslate.Enabled = false;
+
         }
 
         Pen Pencil(Color color)
@@ -29,12 +36,12 @@ namespace Geometrics_Transfirmations_2D
 
         private void WorkSPace_MouseClick(object sender, MouseEventArgs e)
         {
-            Point point = new Point(e.X,e.Y);
+            Point point = new Point(e.X, e.Y);
 
-            if(btn_DrawnFigure.Enabled != false)
+            if (btn_DrawnFigure.Enabled != false)
             {
                 pts.Add(point);
-                WorkSPace.CreateGraphics().DrawEllipse(Pencil(Color.Black),point.X,point.Y,2,2);
+                WorkSPace.CreateGraphics().DrawEllipse(Pencil(Color.Black), point.X, point.Y, 2, 2);
             }
         }
 
@@ -45,9 +52,9 @@ namespace Geometrics_Transfirmations_2D
 
         private void Btn_DrawnFigure_Click(object sender, EventArgs e)
         {
-            if(pts.Count > 1)
+            if (pts.Count > 1)
             {
-                DrawnFigure(pts,Pencil(Color.Black));
+                DrawnFigure(pts, Pencil(Color.Black));
                 DrawnCenter(pts);
             }
             else
@@ -62,7 +69,13 @@ namespace Geometrics_Transfirmations_2D
             txB_TraslationX.Clear();
             txB_TraslationY.Clear();
             txb_Escale.Clear();
-            pts.Clear();           
+            pts.Clear();
+
+            btn_refleX.Enabled = false;
+            btn_refleY.Enabled = false;
+            btn_Rotation.Enabled = false;
+            btn_Scalar.Enabled = false;
+            btn_Traslate.Enabled = false;
             btn_DrawnFigure.Enabled = true;
         }
 
@@ -90,6 +103,7 @@ namespace Geometrics_Transfirmations_2D
         {
             int translateX = 0;
             int translateY = 0;
+
             if (txB_TraslationX.Text != "" && txB_TraslationY.Text != "")
             {
                 translateX = Convert.ToInt32(txB_TraslationX.Text);
@@ -122,13 +136,26 @@ namespace Geometrics_Transfirmations_2D
 
         private void Btn_Rotation_Click(object sender, EventArgs e)
         {
-            grades = trackBar_Rotation.Value;
+            int grades = trackBar_Rotation.Value;
 
             List<Point> centro, rotacion, origen;
             centro = PtsDisplacementOrigin(pts);
-            rotacionAnimada(centro, grades);
+            RotationAnimated(centro, grades);
             rotacion = Rotation(centro, grades);
             origen = PtsDisplacementOriginalPosition(rotacion);
+            pts = origen;
+            DrawnCenter(pts);
+        }
+
+        private void Btn_Scalar_Click(object sender, EventArgs e)
+        {
+            int scale = Convert.ToInt32(txb_Escale.Text);
+            List<Point> Origin, escalar, origen;
+            Origin = PtsDisplacementOrigin(pts);
+            ScaleAnimated(Origin, scale);
+            escalar = ScaleFigure(Origin, scale);
+
+            origen = PtsDisplacementOriginalPosition(escalar);
             pts = origen;
             DrawnCenter(pts);
         }
@@ -137,20 +164,24 @@ namespace Geometrics_Transfirmations_2D
         {
             WorkSPace.Refresh();
 
-            for (int i = 0; i < pts.Count; i++ )
+            for (int i = 0; i < pts.Count; i++)
             {
-                if (i ==(pts.Count- 1))
+                if (i == (pts.Count - 1))
                 {
-                    WorkSPace.CreateGraphics().DrawLine(Pencil(Color.Black), pts[i],pts[0]);
+                    WorkSPace.CreateGraphics().DrawLine(Pencil(Color.Black), pts[i], pts[0]);
                 }
                 else
                 {
-                    WorkSPace.CreateGraphics().DrawLine(Pencil(Color.Black), pts[i], pts[i+1]);
-
+                    WorkSPace.CreateGraphics().DrawLine(Pencil(Color.Black), pts[i], pts[i + 1]);
                 }
             }
             //DrawnCenter(pts);
             btn_DrawnFigure.Enabled = false;
+            btn_refleX.Enabled = true;
+            btn_refleY.Enabled = true;
+            btn_Rotation.Enabled = true;
+            btn_Scalar.Enabled = true;
+            btn_Traslate.Enabled = true;
 
         }
 
@@ -210,13 +241,24 @@ namespace Geometrics_Transfirmations_2D
 
         }
 
-        void rotacionAnimada(List<Point> l, int grados)
+        void RotationAnimated(List<Point> pts, int grades)
         {
-            for (int i = 1; i <= grados; i++)
+            for (int i = 1; i <= grades; i++)
             {
                 WorkSPace.Refresh();
-                DrawnFigure(Rotation(l, (i)), Pencil(Color.Black));
+                DrawnFigure(Rotation(pts, (i)), Pencil(Color.Black));
                 System.Threading.Thread.Sleep(100);
+            }
+        }
+
+        void ScaleAnimated(List<Point> pts, int scale)
+        {
+            for (int i = 1; i <= scale; i++)
+            {
+                WorkSPace.Refresh();
+                DrawnFigure(ScaleFigure(pts, (i)), Pencil(Color.Black));
+                System.Threading.Thread.Sleep(500);
+                Console.WriteLine("Escalado por:" + i);
             }
         }
 
@@ -248,27 +290,27 @@ namespace Geometrics_Transfirmations_2D
             }
 
             xc = (Max.X + Min.X) / 2;
-            yc= (Max.Y + Min.Y) / 2;
+            yc = (Max.Y + Min.Y) / 2;
 
             Point Center = new Point(xc, yc);
             return Center;
-        }      
+        }
 
-        public List<Point> ReflectionX(List<Point>pts)
+        public List<Point> ReflectionX(List<Point> pts)
         {
-             List<Point> ptsReflected = new List<Point>();
-             Point Center = FindCenter(pts);
-             Point aux;
+            List<Point> ptsReflected = new List<Point>();
+            Point Center = FindCenter(pts);
+            Point aux;
 
-             for (int i = 0; i < pts.Count; i++  )
-             {
-                 aux = new Point();
-                 aux.X = pts[i].X;
-                 aux.Y = ((Center.Y - pts[i].Y ) * 2) + pts[i].Y;
-                 ptsReflected.Add(aux);
-             }
+            for (int i = 0; i < pts.Count; i++)
+            {
+                aux = new Point();
+                aux.X = pts[i].X;
+                aux.Y = ((Center.Y - pts[i].Y) * 2) + pts[i].Y;
+                ptsReflected.Add(aux);
+            }
 
-             return ptsReflected;
+            return ptsReflected;
 
         }
 
@@ -295,20 +337,20 @@ namespace Geometrics_Transfirmations_2D
             CenterOrigin = FindCenter(pts);
             List<Point> ptsTraslated = new List<Point>();
             Point aux;
-          
+
             for (int i = 0; i < pts.Count; i++)
             {
                 aux = new Point();
-                
+
                 aux.X = (pts[i].X + tx);
                 aux.Y = (pts[i].Y + ty);
 
                 ptsTraslated.Add(aux);
 
             }
-            
+
             return ptsTraslated;
-           
+
         }
 
         public List<Point> PtsDisplacementOrigin(List<Point> pts)
@@ -322,7 +364,7 @@ namespace Geometrics_Transfirmations_2D
             for (int i = 0; i <= center.X; i++)
             {
                 DisplacedPoints = Traslation(pts, -i, cy);
-              
+
                 WorkSPace.Refresh();
                 DrawnFigure(Traslation(pts, -i, cy), Pencil(Color.Black));
                 System.Threading.Thread.Sleep(10);
@@ -341,9 +383,9 @@ namespace Geometrics_Transfirmations_2D
 
         public List<Point> PtsDisplacementOriginalPosition(List<Point> pts)
         {
-            
+
             List<Point> ptsDisplacedOrigin = new List<Point>(); ;
-            Point center = CenterOrigin;           
+            Point center = CenterOrigin;
 
             int cx = 0;
             int cy = 0;
@@ -380,16 +422,57 @@ namespace Geometrics_Transfirmations_2D
             Double Sin = Math.Sin(teta);
 
             for (int i = 0; i < pts.Count; i++)
-            {               
-               
+            {
+
                 PRotar.X = (int)((Cos * pts[i].X) - (Sin * pts[i].Y));
                 PRotar.Y = (int)((Sin * pts[i].X) + (Cos * pts[i].Y));
 
                 ptsRotated.Add(PRotar);
 
             }
-            
+
             return ptsRotated;
         }
+
+        public List<Point> ScaleFigure(List<Point> puntos, int scale)
+        {
+            List<Point> Scaledpts = new List<Point>();
+            Point ScaledPt = new Point(); ;
+
+
+            for (int i = 0; i < puntos.Count; i++)
+            {
+
+                ScaledPt.X = puntos[i].X * scale;
+                ScaledPt.Y = puntos[i].Y * scale;
+
+                Scaledpts.Add(ScaledPt);
+            }
+
+            DrawnCenter(puntos);
+            return Scaledpts;
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            Point point = new Point(275, 285);
+            Point point1 = new Point(200, 255);
+            Point point2 = new Point(275, 110);
+            Point point3 = new Point(325, 250);
+            Point point4 = new Point(275, 285);
+            Point point5 = new Point(275, 110);
+
+            pts.Add(point);
+            pts.Add(point1);
+            pts.Add(point2);
+            pts.Add(point3);
+            pts.Add(point4);
+            pts.Add(point5);
+
+            //WorkSPace.CreateGraphics().DrawEllipse(Pencil(Color.Black), point.X, point.Y, 2, 2);
+
+        }
+       
     }
+
 }
